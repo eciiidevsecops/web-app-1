@@ -1,0 +1,41 @@
+# Use version 3.8 of Docker Compose file format
+version: '3.8'
+
+# Define the services (containers) that make up your application
+services:
+  # Client service (frontend React application)
+  client:
+    # Build the Docker image for the client from the ./client directory
+    image: ghcr.io/${{ github.repository_owner }}/client-app:latest
+    # Map port 3000 of the host to port 3000 of the client container
+    ports:
+      - "3000:3000"
+    # Ensure the server service is running before starting the client
+    depends_on:
+      - server
+
+  # Server service (Node.js Express backend API)
+  server:
+    # Build the Docker image for the server from the ./server directory
+    image: ghcr.io/${{ github.repository_owner }}/server-app:latest
+    # Map port 5000 of the host to port 5000 of the server container
+    ports:
+      - "5000:5000"
+    # Ensure the database service is running before starting the server
+    depends_on:
+      - database
+
+  # Database service (MySQL database)
+  database:
+    # Build the Docker image for the database from the ./database directory
+    image: ghcr.io/${{ github.repository_owner }}/database-app:latest
+    # Map port 3306 of the host to port 3306 of the database container (MySQL default port)
+    ports:
+      - "3306:3306"
+    # Define environment variables for the MySQL database setup
+    environment:
+      MYSQL_DATABASE: mydatabase # Name of the database to create
+      MYSQL_USER: user           # Username for the database
+      MYSQL_PASSWORD: password   # Password for the database user
+      MYSQL_ROOT_PASSWORD: rootpassword # Root password for MySQL
+      # Add other environment variables for your database here if needed 
